@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-func EchoCommand() *command.Command {
-	return &command.Command{
-		Name:        "echo",
-		Description: "just echo something",
-		Executor: func(cmd *command.Line, reader shellio.Reader, writer shellio.Writer) {
+func EchoCommand() command.Command {
+	return command.
+		NewCommandBuilder("echo").
+		Description("just echo something").
+		Executor(func(cmd *command.Line, reader shellio.Reader, writer shellio.Writer) {
 			writer.WriteLine(strings.Join(cmd.Arguments, " "))
-		},
-	}
+		}).
+		Build()
 }

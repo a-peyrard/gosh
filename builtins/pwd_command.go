@@ -6,11 +6,10 @@ import (
 	"os"
 )
 
-func PwdCommand() *command.Command {
-	return &command.Command{
-		Name:        "pwd",
-		Description: "Print working directory",
-		ExecutorE: func(cmd *command.Line, reader shellio.Reader, writer shellio.Writer) error {
+func PwdCommand() command.Command {
+	return command.NewCommandBuilder("pwd").
+		Description("Print working directory").
+		ExecutorE(func(cmd *command.Line, reader shellio.Reader, writer shellio.Writer) error {
 			dir, err := os.Getwd()
 			if err != nil {
 				return err
@@ -19,6 +18,6 @@ func PwdCommand() *command.Command {
 			writer.WriteLine(dir)
 
 			return nil
-		},
-	}
+		}).
+		Build()
 }

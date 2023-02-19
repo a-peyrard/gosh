@@ -10,19 +10,19 @@ import (
 )
 
 type gosh struct {
-	commands map[string]*command.Command
+	commands map[string]command.Command
 }
 
 //goland:noinspection GoExportedFuncWithUnexportedType
 func New() *gosh {
 	return &gosh{
-		commands: make(map[string]*command.Command, 0),
+		commands: make(map[string]command.Command, 0),
 	}
 }
 
-func (g *gosh) AddCommand(c *command.Command) error {
+func (g *gosh) AddCommand(c command.Command) error {
 	// fixme validate the command correctness
-	g.commands[c.Name] = c
+	g.commands[c.Name()] = c
 
 	return nil
 }
@@ -70,18 +70,18 @@ func (g *gosh) Run() {
 			log.Println("unknown command: ", commandLine.Name)
 			continue
 		}
-		if c.ExecutorE != nil {
-			err := c.ExecutorE(commandLine, in, out)
+		if c.ExecutorE() != nil {
+			err := c.ExecutorE()(commandLine, in, out)
 			if err != nil {
 				log.Printf("error executing command %s: %+v\n", commandLine.Name, err)
 			}
 		} else {
-			c.Executor(commandLine, in, out)
+			c.Executor()(commandLine, in, out)
 		}
 	}
 }
 
-func buildCompleter(commands map[string]*command.Command) readline.AutoCompleter {
+func buildCompleter(commands map[string]command.Command) readline.AutoCompleter {
 	prefixCompleters := make([]readline.PrefixCompleterInterface, 0)
 	for name := range commands {
 		prefixCompleters = append(prefixCompleters, readline.PcItem(name))

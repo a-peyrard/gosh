@@ -33,7 +33,7 @@ func (g *gosh) Run() {
 		HistoryFile:     "/tmp/readline.tmp",
 		AutoComplete:    buildCompleter(g.commands),
 		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
+		EOFPrompt:       "bye",
 
 		HistorySearchFold:   true,
 		FuncFilterInputRune: filterInput,
@@ -54,11 +54,7 @@ func (g *gosh) Run() {
 	for {
 		line, err := l.Readline()
 		if err == readline.ErrInterrupt {
-			if len(line) == 0 {
-				break
-			} else {
-				continue
-			}
+			continue
 		} else if err == io.EOF {
 			break
 		}
@@ -70,9 +66,12 @@ func (g *gosh) Run() {
 			log.Println("unknown command: ", commandLine.Name)
 			continue
 		}
-		if c.ExecutorE() != nil {
-			err := c.ExecutorE()(commandLine, in, out)
+		if c.UnsafeExecutor() != nil {
+			err := c.UnsafeExecutor()(commandLine, in, out)
 			if err != nil {
+				if err == io.EOF {
+					break
+				}
 				log.Printf("error executing command %s: %+v\n", commandLine.Name, err)
 			}
 		} else {

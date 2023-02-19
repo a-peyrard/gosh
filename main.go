@@ -11,6 +11,7 @@ func main() {
 
 	_ = gosh.AddCommand(builtins.EchoCommand())
 	_ = gosh.AddCommand(builtins.PwdCommand())
+	_ = gosh.AddCommand(builtins.ExitCommand())
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)

@@ -38,7 +38,7 @@ func (b *baseCommandWithSubsBuilder) AddSubCommand(cmd Command) *baseCommandWith
 }
 
 func (b *baseCommandWithSubsBuilder) Build() Command {
-	b.unsafeExecutor = func(cmd *Line, reader shellio.Reader, writer shellio.Writer) (err error) {
+	b.executor = func(cmd *Line, reader shellio.Reader, writer shellio.Writer) (err error) {
 		if len(cmd.Arguments) == 0 {
 			writer.WriteLine("display usage") // fixme
 			return
@@ -52,13 +52,7 @@ func (b *baseCommandWithSubsBuilder) Build() Command {
 		}
 
 		cmd.Arguments = cmd.Arguments[1:]
-		// fixme: shall we have only one executor and the executor not throwing errors is not in the
-		// fixme: interface, but just a simplification of the builder?
-		if subCommand.UnsafeExecutor() != nil {
-			err = subCommand.UnsafeExecutor()(cmd, reader, writer)
-		} else {
-			subCommand.Executor()(cmd, reader, writer)
-		}
+		err = subCommand.Executor()(cmd, reader, writer)
 
 		return
 	}

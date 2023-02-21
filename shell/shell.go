@@ -66,16 +66,12 @@ func (g *gosh) Run() {
 			log.Println("unknown command: ", commandLine.Name)
 			continue
 		}
-		if c.UnsafeExecutor() != nil {
-			err := c.UnsafeExecutor()(commandLine, in, out)
-			if err != nil {
-				if err == io.EOF {
-					break
-				}
-				log.Printf("error executing command %s: %+v\n", commandLine.Name, err)
+		err = c.Executor()(commandLine, in, out)
+		if err != nil {
+			if err == io.EOF {
+				break
 			}
-		} else {
-			c.Executor()(commandLine, in, out)
+			log.Printf("error executing command %s: %+v\n", commandLine.Name, err)
 		}
 	}
 }

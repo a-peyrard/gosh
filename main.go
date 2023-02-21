@@ -9,10 +9,10 @@ import (
 func main() {
 	gosh := shell.New()
 
-	_ = gosh.AddCommand(builtins.PluginCommand())
-	_ = gosh.AddCommand(builtins.EchoCommand())
-	_ = gosh.AddCommand(builtins.PwdCommand())
-	_ = gosh.AddCommand(builtins.ExitCommand())
+	_ = gosh.CommandStore().AddCommand(builtins.PluginCommand(gosh.CommandStore()))
+	_ = gosh.CommandStore().AddCommand(builtins.EchoCommand())
+	_ = gosh.CommandStore().AddCommand(builtins.PwdCommand())
+	_ = gosh.CommandStore().AddCommand(builtins.ExitCommand())
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)

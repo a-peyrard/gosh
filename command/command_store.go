@@ -21,12 +21,16 @@ func (s *Store) Lookup(commandAlias string) (found bool, cmd Command) {
 	return
 }
 
-func (s *Store) AddCommand(commandAlias string, command Command) (err error) {
+func (s *Store) AddCommand(cmd Command) (err error) {
+	return s.AddCommandWithAlias(cmd.Name(), cmd)
+}
+
+func (s *Store) AddCommandWithAlias(commandAlias string, cmd Command) (err error) {
 	found, _ := s.Lookup(commandAlias)
 	if found {
 		err = errors.Errorf("unable to add command %s, alias is already in use", commandAlias)
 	} else {
-		s.commands[commandAlias] = command
+		s.commands[commandAlias] = cmd
 		s.version++
 	}
 

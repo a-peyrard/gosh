@@ -20,8 +20,8 @@ func New() *gosh {
 	}
 }
 
-func (g *gosh) AddCommand(c command.Command) error {
-	return g.commandStore.AddCommand(c.Name(), c)
+func (g *gosh) CommandStore() *command.Store {
+	return g.commandStore
 }
 
 func (g *gosh) Run() {

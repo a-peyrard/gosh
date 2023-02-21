@@ -5,7 +5,7 @@ import (
 	"github.com/a-peyrard/gosh/shellio"
 )
 
-func PluginCommand() command.Command {
+func PluginCommand(store *command.Store) command.Command {
 	return command.NewCommandWithSubsBuilder("plugin").
 		Description("manage plugins").
 		AddSubCommand(

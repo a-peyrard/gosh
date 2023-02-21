@@ -10,28 +10,25 @@ import (
 )
 
 type gosh struct {
-	commands map[string]command.Command
+	commandStore *command.Store
 }
 
 //goland:noinspection GoExportedFuncWithUnexportedType
 func New() *gosh {
 	return &gosh{
-		commands: make(map[string]command.Command, 0),
+		commandStore: command.NewStore(),
 	}
 }
 
 func (g *gosh) AddCommand(c command.Command) error {
-	// fixme validate the command correctness
-	g.commands[c.Name()] = c
-
-	return nil
+	return g.commandStore.AddCommand(c.Name(), c)
 }
 
 func (g *gosh) Run() {
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          "\033[31m»\033[0m ",
 		HistoryFile:     "/tmp/readline.tmp",
-		AutoComplete:    readline.NewPrefixCompleter(command.BuildCompleterForCommands(g.commands)...),
+		AutoComplete:    g.commandStore.Completer(),
 		InterruptPrompt: "^C",
 		EOFPrompt:       "bye",
 
@@ -61,12 +58,12 @@ func (g *gosh) Run() {
 		line = strings.TrimSpace(line)
 		commandLine := command.ParseLine(line)
 
-		c, exists := g.commands[commandLine.Name]
+		exists, cmd := g.commandStore.Lookup(commandLine.Name)
 		if !exists {
 			log.Println("unknown command: ", commandLine.Name)
 			continue
 		}
-		err = c.Executor()(commandLine, in, out)
+		err = cmd.Executor()(commandLine, in, out)
 		if err != nil {
 			if err == io.EOF {
 				break

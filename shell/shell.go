@@ -31,7 +31,7 @@ func (g *gosh) Run() {
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          "\033[31m»\033[0m ",
 		HistoryFile:     "/tmp/readline.tmp",
-		AutoComplete:    buildCompleter(g.commands),
+		AutoComplete:    readline.NewPrefixCompleter(command.BuildCompleterForCommands(g.commands)...),
 		InterruptPrompt: "^C",
 		EOFPrompt:       "bye",
 
@@ -74,14 +74,6 @@ func (g *gosh) Run() {
 			log.Printf("error executing command %s: %+v\n", commandLine.Name, err)
 		}
 	}
-}
-
-func buildCompleter(commands map[string]command.Command) readline.AutoCompleter {
-	prefixCompleters := make([]readline.PrefixCompleterInterface, 0)
-	for name := range commands {
-		prefixCompleters = append(prefixCompleters, readline.PcItem(name))
-	}
-	return readline.NewPrefixCompleter(prefixCompleters...)
 }
 
 func filterInput(r rune) (rune, bool) {
